@@ -1,86 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Blood bank</title>
   <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
-  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css"></link>
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css">
+  </link>
   <link href="styles.css" rel="stylesheet" type="text/css">
   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 </head>
+
 <body>
   <div id="app">
     <v-app>
-        <v-layout justify-center margin-a-3>
-            <v-flex xs12 md9 >
-              <v-toolbar color="indigo" dark>
-                <v-toolbar-title style="align-items: center">Blood Bank</v-toolbar-title>
-                <v-spacer></v-spacer>
-              </v-toolbar>
-        
-              <v-card >
-                <v-container
-                  fluid
-                  grid-list-md
-                >
-                  <v-layout row wrap >
-                    <v-flex
-                      v-for="card in cards"
-                      :key="card.blood_group"
-                    > 
-                      <v-card class="black--text" height="120px" width="220px" color="grey lighten-2"  > 
-                          <v-flex xs12 >
-                          
-                              <v-card-title ><h2 class="justify-center">{{ card.blood_group }}</h2></v-card-title>
-                                       </v-flex>
-                      </v-card>
-                      <v-flex >
-                          <v-layout column justify-space-between fill-height>
-                      <v-card class="black--text" width="220px" color="grey lighten-2">
-                        <v-divider></v-divider>
+      <v-layout justify-center margin-a-3>
+        <v-flex xs12 md9>
+          <v-toolbar color="indigo" dark>
+            <v-toolbar-title style="align-items: center">Blood Bank</v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+
+          <v-card>
+            <v-container fluid grid-list-md>
+              <v-layout row wrap>
+                <v-flex v-for="card in cards" :key="card.blood_group">
+                  <div class="black--text" :id="card.blood_group" style="background-color:lightgray; height: 120px; width: 220px">
+                    <v-flex xs12>
+
+                      <v-card-title>
+                        <h2 class="justify-center">{{ card.blood_group }}</h2>
+                      </v-card-title>
+                    </v-flex>
+                  </div>
+                  <v-flex>
+                    <v-layout column justify-space-between fill-height>
+                      <div class="black--text" width="220px" style="background-color:lightgray;height: 40px; width: 220px">
                         <v-card-text>
-                            {{ card.quantity }}</v-card-text>
-                      </v-card>
+                          {{ card.quantity }}</v-card-text>
+                        </div>
+  
                     </v-layout>
-                  </v-flex>                  
+                  </v-flex>
                 </v-flex>
               </v-layout>
-                </v-container>
-                <v-layout  justify-center xs12 sm3 md9 row wrap>
-                  <v-layout  column wrap>
-                      <v-flex xs12 sm5 md5 d-flex offset-sm3>
-                          <v-autocomplete
-                          v-model="select"
-                          :items="cards"
-                          label="Blood required"
-                          item-text="blood_group"
-                          required
-                        ></v-autocomplete>
-                      </v-flex >
-                    <v-flex xs12 sm6 md4 offset-sm3>
-                        <v-text-field
-                          v-model="bottles"
-                          label="Number of bottles"
-                          readonly
-                        ></v-text-field>
-                      </v-flex>
-                </v-layout>   
-                <v-layout column wrap>
-                  <v-flex xs12 sm6 offset-sm3 padding-a-3>
-                    <v-card height="300px" width="450px" style="border: black 3px">
-                    </v-card>  
-                    <p style="text-align: center"> Bucket</p>              
-                  </v-flex>
-                </v-layout>    
-                
-                         
-             </v-layout>      
-              </v-card>
-            </v-flex>
-          </v-layout>
-        
+            </v-container>
+            <v-layout justify-center xs12 sm3 md3 row wrap>
+              <v-layout column wrap>
+                <v-flex xs12 sm5 md5 d-flex offset-sm3>
+                  <v-autocomplete v-model="select" :items="cards" label="Blood required" item-text="blood_group"
+                    required @change="eligibleDonors"></v-autocomplete>
+                </v-flex>
+                <v-flex xs12 sm6 md4 offset-sm3>
+                  <v-text-field v-model="bottles" label="Number of bottles"  @input="inStockBottles"></v-text-field>
+                </v-flex>
+              </v-layout>
+              <v-layout column wrap>
+                <v-flex xs12 sm6 offset-sm3 padding-a-3>
+                  <v-card height="300px" width="450px" style="border: black 3px" ondragend="allowDrop(event)" id="dropCard">
+                  </v-card>
+                  <p style="text-align: center"> Bucket</p>
+                </v-flex>
+              </v-layout>
+
+
+            </v-layout>
+          </v-card>
+        </v-flex>
+      </v-layout>
+
     </v-app>
   </div>
 
@@ -88,22 +78,63 @@
   <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
   <script>
 
+    
     new Vue({
       el: '#app',
       data: {
         cards: [
-              {  blood_group : 'A+', quantity: 3, recieve_from: ['A+', 'A-', 'O+', 'O-'] },
-              {  blood_group : 'B+', quantity: 8, recieve_from: ['B+', 'B-', 'O+', 'O-'] },
-              {  blood_group : 'O+', quantity: 2, recieve_from: ['O+', 'O-'] },
-              {  blood_group : 'AB+', quantity: 5, recieve_from: ['A+', 'A-', 'O+', 'O-', 'AB+', 'B+', 'B-', 'AB-'] },
-              {  blood_group : 'A-', quantity: 9, recieve_from: ['A-', 'O-'] },
-              {  blood_group : 'B-', quantity: 6, recieve_from: ['B-', 'O-'] },
-              {  blood_group : 'O-', quantity: 8, recieve_from: ['O-'] },
-              {  blood_group : 'AB-', quantity: 3, recieve_from: ['AB-', 'A-', 'B-', 'O-'] }
-            ],
-            select: '',
-            bottles: ''
-      }
+          { blood_group: 'A+', quantity: 3, recieve_from: ['A+', 'A-', 'O+', 'O-'] },
+          { blood_group: 'B+', quantity: 8, recieve_from: ['B+', 'B-', 'O+', 'O-'] },
+          { blood_group: 'O+', quantity: 2, recieve_from: ['O+', 'O-'] },
+          { blood_group: 'AB+', quantity: 5, recieve_from: ['A+', 'A-', 'O+', 'O-', 'AB+', 'B+', 'B-', 'AB-'] },
+          { blood_group: 'A-', quantity: 9, recieve_from: ['A-', 'O-'] },
+          { blood_group: 'B-', quantity: 6, recieve_from: ['B-', 'O-'] },
+          { blood_group: 'O-', quantity: 8, recieve_from: ['O-'] },
+          { blood_group: 'AB-', quantity: 3, recieve_from: ['AB-', 'A-', 'B-', 'O-'] }
+        ],
+        select: '',
+        bottles: '',
+        card_select: '',
+        selection: ''
+      },
+      methods: {
+        eligibleDonors() {
+          this.card_select = ''
+
+          for (let i = 0; i < this.cards.length; i++) {
+            if (this.select == this.cards[i].blood_group) {
+            //  var selection = i;
+                 this.selection = i;
+              break;
+            }
+          }
+          for (let i = 0; i < this.cards[this.selection].recieve_from.length; i++) {
+            this.card_select = this.cards[this.selection].recieve_from[i]
+            console.log("eligible blood group: " + this.card_select)
+            document.getElementById(this.card_select).style.backgroundColor = "lightgreen"
+            console.log(document.getElementById(this.card_select).style.backgroundColor)
+          }
+        },
+        inStockBottles() {
+          console.log("Hello World")
+            for (let i = 0; i < this.cards[this.selection].recieve_from.length; i++) {
+            
+                for( let j=0; j<this.cards.length; j++) {
+                  if(this.cards[this.selection].recieve_from[i] == this.cards[j].blood_group)
+                  {
+                    if(this.cards[j].quantity >= this.bottles)
+                    {
+                      document.getElementById(this.cards[j].blood_group).style.backgroundColor = "green"
+                     console.log(document.getElementById(this.cards[j].blood_group).style.backgroundColor) 
+                     break;
+                    }
+                  }
+
+                    } 
+            } 
+            }
+          }   
+      
     })
   </script>
 </body>
