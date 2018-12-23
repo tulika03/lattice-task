@@ -25,25 +25,19 @@
 
           <v-card>
             <v-container fluid grid-list-md>
-              <v-layout row wrap>
-                <v-flex v-for="card in cards" :key="card.blood_group">
-                  <div class="black--text" :id="card.blood_group" style="background-color:lightgray; height: 120px; width: 220px">
+              <v-layout row wrap id="dragzone" color=>
+                <v-flex v-for="card in cards" :key="card.blood_group" >
+                  <div class="black--text" :id="card.blood_group" draggable="true" ondragstart="drag(event)" style="background-color:lightgray; height: 160px; width: 220px; position: relative;" >
                     <v-flex xs12>
 
                       <v-card-title>
                         <h2 class="justify-center">{{ card.blood_group }}</h2>
                       </v-card-title>
+                      <div  style="background-color:lightgray; height: 40px; width: 220px; position:absolute; bottom: 0; left: 0; text-align: center">
+                       <b id="testing">{{ card.quantity }}</b>  
+                      </div>
                     </v-flex>
-                  </div>
-                  <v-flex>
-                    <v-layout column justify-space-between fill-height>
-                      <div class="black--text" width="220px" style="background-color:lightgray;height: 40px; width: 220px">
-                        <v-card-text>
-                          {{ card.quantity }}</v-card-text>
-                        </div>
-  
-                    </v-layout>
-                  </v-flex>
+                  </div>                 
                 </v-flex>
               </v-layout>
             </v-container>
@@ -59,8 +53,8 @@
               </v-layout>
               <v-layout column wrap>
                 <v-flex xs12 sm6 offset-sm3 padding-a-3>
-                  <v-card height="300px" width="450px" style="border: black 3px" ondragend="allowDrop(event)" id="dropCard">
-                  </v-card>
+                  <div style="border-left: 2px solid black;border-right: 2px solid black;border-bottom: 2px solid black; height: 300px; width: 350px" id="dropZone" ondragover="drop(event)" ondrop="drop(event)">
+                  </div>
                   <p style="text-align: center"> Bucket</p>
                 </v-flex>
               </v-layout>
@@ -77,9 +71,32 @@
   <script src="https://unpkg.com/vue/dist/vue.js"></script>
   <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
   <script>
+    var dragEelementId;
+    function allowDrop(ev) {
+               ev.preventDefault();
+            }
 
-    
-    new Vue({
+    function drag(ev) {
+              ev.dataTransfer.setData("text", ev.target.id);
+              dragElementId = ev.target.id;
+            } 
+    function drop(ev) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text"); 
+      var nodeCopy = document.getElementById(data).cloneNode(true);
+      nodeCopy.id = "newId";
+     ev.target.appendChild(nodeCopy);
+     var time = document.getElementById("newId").getElementsByTagName("b");
+     time.item(0).innerHTML = x.bottles;
+     for(let i=0; i<x.cards.length; i++) {
+       if(x.cards[i].blood_group == dragElementId) {
+         x.cards[i].quantity = x.cards[i].quantity - x.bottles;
+         console.log("new Bottle is: " + x.cards[i].quantity);
+       }
+     }
+    }
+
+ var x =   new Vue({
       el: '#app',
       data: {
         cards: [
@@ -95,8 +112,10 @@
         select: '',
         bottles: '',
         card_select: '',
-        selection: ''
-      },
+        selection: '',
+        bg_id: '',
+        q_id: ''
+        },
       methods: {
         eligibleDonors() {
           this.card_select = ''
@@ -112,7 +131,6 @@
             this.card_select = this.cards[this.selection].recieve_from[i]
             console.log("eligible blood group: " + this.card_select)
             document.getElementById(this.card_select).style.backgroundColor = "lightgreen"
-            console.log(document.getElementById(this.card_select).style.backgroundColor)
           }
         },
         inStockBottles() {
@@ -125,14 +143,13 @@
                     if(this.cards[j].quantity >= this.bottles)
                     {
                       document.getElementById(this.cards[j].blood_group).style.backgroundColor = "green"
-                     console.log(document.getElementById(this.cards[j].blood_group).style.backgroundColor) 
                      break;
                     }
                   }
 
-                    } 
-            } 
-            }
+                } 
+              } 
+            }            
           }   
       
     })
